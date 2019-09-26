@@ -1,6 +1,6 @@
 # Project Kunta
 
-![alt text](http://kunta.io/img/kunta_right.png  =250x "Project Kunta Logo")
+<img src="http://kunta.io/img/kunta_right.png" alt="Project Kunta Logo" width="100"/>
 
 
 *** RUN ON NODE v9.6.1 FOR NOW **
