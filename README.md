@@ -1,3 +1,8 @@
+# Project Kunta
+
+![alt text](http://kunta.io/img/kunta_right.png "Project Kunta Logo")
+
+
 *** RUN ON NODE v9.6.1 FOR NOW **
 
 ## Protocol
