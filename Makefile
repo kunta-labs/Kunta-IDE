@@ -19,7 +19,7 @@ build_all:
 	make
 save:
 	git add * -v;
-	git commit -am "default save IDE" -v;
+	git commit -am "$(SM)" -v;
 	git push origin master -v ;
 build_save_run:	
 	say "done" ; 
