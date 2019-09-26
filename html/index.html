@@ -1,0 +1,1375 @@
+<!--
+Copyright 2017-Present The Kunta Protocol Authors
+This file is part of the Kunta Protocol library.
+The Kunta Protocol is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+The Kunta Protocol is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+You should have received a copy of the GNU Lesser General Public License
+along with the Kunta Protocol library. If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Kunta Development Platform v0.0.1</title>
+    <meta name="description" content="Kunta Dashboard">
+    <meta name="author" content="Kunta">
+
+    <!-- Insert this line above script imports  -->
+	<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- <link rel="stylesheet" href="css/font-awesome.min.css"> -->
+
+    <script defer src="js/all.js"></script>
+
+    <link rel="stylesheet" href="css/all.css">
+
+
+    <script type="text/javascript" src="js/vis.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/vis-network.min.css" />
+
+
+
+    <style>
+    	.navbar{
+    		/*background: #ccc !important;*/
+    	}
+    	.nav-filter {
+			background-color:#444 !important;
+		}
+
+		.nav-pills>li>a:hover {
+			background-color: # !important;
+		}
+		.nav-pills .open>a, 
+		.nav-pills .open>a:active, 
+		.nav-pills .open>a:focus{
+			background-color: #FF6699 !important;
+		}
+		
+		code {
+		  background-color: #EEEEEE;
+		  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+		}
+		pre {
+		  background-color: #EEEEEE;
+		  font-family: Consolas,Menlo,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New,monospace,serif;
+		  margin-bottom: 10px;
+		  max-height: 600px;
+		  overflow: auto;
+		  padding: 5px;
+		  width: 100%;
+		  /*overflow-x:scroll;
+		  overflow-y:scroll;*/
+		}
+
+		.tooltip-inner {
+            /*max-width: none !important;*/
+            white-space: wrap !important;
+        }
+        .preBC {
+        	width: 100%;
+        	overflow-x: hidden;
+        	white-space: pre-wrap !important;
+        }
+
+        .popover{
+        	max-width: none !important;
+        	max-height: none !important;
+        	width: 50vw !important;
+        }
+
+        #BC_VIZ{
+        	width: 100%;
+        	height: 100%;
+        	border: 1px solid black;
+        	vertical-align: center; 
+        	text-align: center;
+        	background: #ccc;
+        }
+
+        #bc_viz_holder{
+        	border: 0px solid black; 
+        	height: 60vh;
+        	width: 80vw;
+        }
+
+        #highlight{
+        	height: 80vh;
+        	width: 100%;
+        	overflow-y: scroll;
+        	border: 1px solid black;
+        }
+
+        .node_tooltip{
+        	font-size: 10px;
+        	text-align: left;
+        }
+
+        .borderSmooth {
+    	  /* Safari 3-4, iOS 1-3.2, Android 1.6- */
+		  -webkit-border-radius: 12px; 
+
+		  /* Firefox 1-3.6 */
+		  -moz-border-radius: 12px; 
+		  
+		  /* Opera 10.5, IE 9, Safari 5, Chrome, Firefox 4, iOS 4, Android 2.1+ */
+		  border-radius: 12px; 
+        }
+
+        .loader {
+		    border: 16px solid #f3f3f3; /* Light grey */
+		    border-top: 16px solid #3498db; /* Blue */
+		    border-radius: 50%;
+		    width: 120px;
+		    height: 120px;
+		    animation: spin 2s linear infinite;
+		    margin: auto auto; 
+	        margin-top: 10%;
+		    vertical-align: center;
+		}
+
+		@keyframes spin {
+		    0% { transform: rotate(0deg); }
+		    100% { transform: rotate(360deg); }
+		}
+
+		/*editor*/
+
+		#editor  { 
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            font-size: 16px;
+        }
+
+	     #sec{
+	        height: 100vh !important;
+	        width: 50% !important;
+	    }
+
+	    .make_border{
+	        border: 1px solid black;
+	    }
+
+		#gmap{
+	    	height: 100vh;
+	        width: 100vw;
+	    }
+
+	    #response_holder{
+	    	font-size: 9px;
+	    }
+
+	    .nav-link{
+	    	color: #000 !important;
+	    }
+
+	    .nav_left.active {
+	    	background: #ccc !important;
+	    }
+
+	    #v-pills-tabContent{
+	    	border: 0px blue solid;
+	    	height: 100vh;
+	    }
+	</style>
+
+	<script src="https://blockly-demo.appspot.com/static/blockly_compressed.js"></script>
+    <script src="https://blockly-demo.appspot.com/static/blocks_compressed.js"></script>
+    <script src="https://blockly-demo.appspot.com/static/msg/js/en.js"></script>
+
+  </head>
+
+
+
+  <body style="border: 0px solid yellow; 
+  			   height: 120vh;
+  			   overflow-y: hidden;">
+
+  	<!-- NAV , bg-inverse-->
+  	<nav class="navbar navbar-expand-lg navbar-light bg-info navbar-fixed-top"
+  	style="border-bottom: 1px solid #666;">
+		 <a class="navbar-brand js-scroll-trigger" href="/">
+	       <img src="img/kunta_right.png" width="10%" />
+	     </a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarTogglerDemo02" >
+		    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+		      <li class="nav-item">
+		        <!-- <a class="nav-link" style="color: #fff" href="/"> Home <span class="sr-only">(current)</span></a> -->
+		      <p><span id="UILog">Idle...</span></p>
+	      	  </li>
+		    </ul>
+	  </div>
+	</nav>
+  	<!-- END NAV -->
+		
+  	<!-- <br><br> -->
+
+  	<!-- SIDE NAV -->
+	<div class="container col-lg-12 nav_pills" style="border: 0px solid black;" >
+	  	<div class="row">
+		  	
+		  	<div class="nav flex-column nav-pills col-lg-2" id="v-pills-tab" role="tablist" aria-orientation="vertical" 
+		  	style="border-right: 1px solid #333">
+		  	  <a class="nav-link nav_left active" id="v-pills-Summary-tab" data-toggle="pill" href="#v-pills-Summary" role="tab" aria-controls="v-pills-Summary" aria-selected="true">Summary</a>
+			  <a class="nav-link nav_left" id="v-pills-Monitor-tab" data-toggle="pill" href="#v-pills-Monitor" role="tab" aria-controls="v-pills-Monitor">Monitor</a>
+			  <a class="nav-link nav_left" id="v-pills-Editor-tab" data-toggle="pill" href="#v-pills-Editor" role="tab" aria-controls="v-pills-Editor" aria-selected="false">Editor</a>
+			  <a class="nav-link nav_left" id="v-pills-Configuration-tab" data-toggle="pill" href="#v-pills-Configuration" role="tab" aria-controls="v-pills-Configuration" aria-selected="false">Chain Templates</a>
+			  <a class="nav-link nav_left" id="v-pills-Manage-tab" data-toggle="pill" href="#v-pills-Manage" role="tab" aria-controls="v-pills-Manage" aria-selected="false">Manage</a>
+			  <a class="nav-link nav_left" id="v-pills-Block-tab" data-toggle="pill" href="#v-pills-Block" role="tab" aria-controls="v-pills-Block" aria-selected="false">Block</a>
+			  <a class="nav-link nav_left" id="v-pills-RootInstances-tab" data-toggle="pill" href="#v-pills-RootInstances" role="tab" aria-controls="v-pills-RootInstances" aria-selected="false">Root Instances</a>
+			  <a class="nav-link nav_left" id="v-pills-Peer-tab" data-toggle="pill" href="#v-pills-Peer" role="tab" aria-controls="v-pills-Peer" aria-selected="false">Peer</a>
+			  <a class="nav-link nav_left" id="v-pills-Wallet-tab" data-toggle="pill" href="#v-pills-Wallet" role="tab" aria-controls="v-pills-Peer" aria-selected="false">Wallet</a>
+			  <a class="nav-link nav_left" id="v-pills-Exchange-tab" data-toggle="pill" href="#v-pills-Exchange" role="tab" aria-controls="v-pills-Peer" aria-selected="false">Exchange</a>
+
+
+			</div>
+
+			<div class="tab-content col-lg-10" id="v-pills-tabContent">
+			  <div class="tab-pane fade show active" id="v-pills-Summary" role="tabpanel" aria-labelledby="v-pills-Summary-tab">
+				<!-- --------------BEGIN SUMMARY SECTION---------------- -->
+
+				<div class="container">
+					<div class="row" style="margin-bottom: 10px; margin-top: 10px;">
+
+						<!-- <input type="text" placeholder="ip address" id="node_ip" />
+						<button onclick="loadLocalBC()">track</button> -->
+
+							  <!-- <div class="input-group-prepend">
+							    <span class="input-group-text" id="basic-addon1">http://</span>
+							  </div>
+
+							  <input type="text" 
+							  		 class="form-control" 
+							  		 placeholder="IP Address" 
+							  		 aria-label="IP Addy" 
+							  		 aria-describedby="basic-addon1"
+							  		 id="node_ip"/> -->
+
+						  	<input type="text" placeholder="ip address" id="node_ip" />
+							<div class="btn btn-primary" onclick="loadLocalBC()">track</div>
+
+						<hr><hr>
+					</div>
+				</div>
+
+				<div class="container">
+					<div class="row">
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title"><span id="block_height">loading...<span></h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Block Height</h6>
+						    <p class="card-text">The length of the current chain. The height is equal to length - 1.</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title"><span id="block_hash">loading...<span></h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Current Hash</h6>
+						    <p class="card-text">The block hash of the current block</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title" id="verify_chain">
+						    	
+						    	<button type="button" class="btn btn-secondary">
+								  Unknown <span class="badge badge-light">0</span>
+								</button>
+
+						    </h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Chain Validity</h6>
+						    <p class="card-text">Iteratively calculate and compare the hash of each block in the chain.</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title"><span id="">4<span></h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Number of Peers</h6>
+						    <p class="card-text">The amount of peers with open current connections.</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title"><span id="state_hash">loading...<span></h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Current State</h6>
+						    <p class="card-text">The most updated on-chain state.</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+						<div class="card" style="width: 18rem;">
+						  <div class="card-body">
+						    <h5 class="card-title"><span id="state_hash">loading...<span></h5>
+						    <h6 class="card-subtitle mb-2 text-muted">Pending RI Pool</h6>
+						    <p class="card-text">The amount of transactions awaiting insertion into a block</p>
+						    <a href="#" class="card-link">Card link</a>
+						    <a href="#" class="card-link">Another link</a>
+						  </div>
+						</div>
+
+
+					</div> <!-- end row -->
+				</div>
+				
+
+			  	
+
+
+		  		<!-- --------------END SUMMARY SECTION---------------- -->
+			  </div>
+			  <div class="tab-pane fade" id="v-pills-Monitor" role="tabpanel" aria-labelledby="v-pills-Monitor-tab">
+				<!-- --------------BEGIN Monitor SECTION---------------- -->
+
+				<div class="container">
+					<div class="row">
+						<nav>
+						  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+						    <a class="nav-item nav-link active" id="nav-chain-tab" data-toggle="tab" href="#nav-chain" role="tab" aria-controls="nav-chain" aria-selected="true">Chain</a>
+						    <a class="nav-item nav-link" id="nav-map-tab" data-toggle="tab" href="#nav-map" role="tab" aria-controls="nav-profile" aria-selected="false">Map</a>
+						  </div>
+						</nav>
+						<div class="tab-content" id="nav-tabContent">
+						  <div class="tab-pane fade show active" id="nav-chain" role="tabpanel" aria-labelledby="nav-chain-tab">
+						  	
+						  	<!-- CHAIN VIEW -->
+					  		<div class="container" style="border: 0px solid black;" >
+								<div id="bc_viz_holder" class="row col-lg-12">
+									<div id="BC_VIZ" class="borderSmooth">
+
+										<div class="loader"></div>
+										<br>
+										  <p><b>Loading Chain...</b></p>
+
+									</div>
+								 <!-- <pre id="eventSpan"></pre> -->
+								</div>
+
+								<br><br>
+								<div class="row col-lg-12">
+									<div class="input-group mb-3 col-lg-4">
+									  <div class="input-group-prepend">
+									    <span class="input-group-text" id="inputGroup-sizing-default">Draw Limit</span>
+									  </div>
+									  <input id="draw_limit" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="10" value="100">
+									</div>
+									<button class="btn btn-info btn-sm" onclick="stabalizeNetwork()">
+								 		Stabalize 
+									</button> 
+								</div>
+							</div>
+						  	<!-- END CHAIN VIEW -->
+
+						  </div>
+						  <div class="tab-pane fade" id="nav-map" role="tabpanel" aria-labelledby="nav-map-tab">
+						  	<!-- MAP VIEW -->
+						  	
+						  	
+
+						  	<!-- CHAIN VIEW -->
+					  		<div class="container" style="border: 0px solid black;" >
+								
+
+								<br><br>
+								<div class="row col-lg-12">
+									<h3>Participating Nodes</h3>
+									<div id="gmap"></div>
+								</div>
+							</div>
+						  	<!-- END CHAIN VIEW -->
+						    
+						  	<!-- END MAP VIEW -->
+						  </div>
+						</div>
+					</div>
+				</div>
+				
+
+			  	
+
+
+		  		<!-- --------------END Monitor SECTION---------------- -->
+			  </div>
+			  <div class="tab-pane" id="v-pills-Editor" role="tabpanel" aria-labelledby="v-pills-Editor-tab" 
+			  style="height: 100vh !important; overflow-y: hidden;">
+			  	<!-- --------------BEGIN Editor SECTION---------------- -->
+
+			  	
+
+
+		  		<!-- Icons Grid -->
+			    <section class="bg-light text-left" style="padding: 20px 0 20px 0" >
+			      <div class="container col-md-12" >
+			        <div class="row"> 
+			            
+
+			          
+
+
+			            <div class="container fade show active" id="code">
+			              <div class="container">
+			                
+			                  <!--  -->
+
+
+			                <div class="row"> 
+			                  <div class="container col col-md-12" 
+			                  style="border: 0px green solid;
+									 height: 50vh;">
+			                      <div class="row"> 
+			                        <div id="sec">
+			                          <div id="editor">version 0.0.0;
+
+use std::fs::File;
+use std::io::{Write, BufReader, BufRead, Error};
+use std::path::Path;
+
+//use wasm_bindgen::prelude::*;
+use std::ffi::{CStr, CString};
+use std::os::raw::{c_char, c_uchar, c_uint, c_void};
+
+pub unsafe extern "C" fn write(param: &str) -> Result<(), Error> {
+    let path = "./log.txt";
+    let mut output = File::create(path)?;
+    write!(output, "{}", param)?;
+    let input = File::open(path)?;
+    let buffered = BufReader::new(input);
+
+    for line in buffered.lines() {
+        println!("{}", line?);
+    }
+
+    Ok(())
+}
+
+#[repr(C)]
+pub struct JsInteropString {
+    data: *const u8,
+    len: usize,
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn execute(s: *const JsInteropString) -> i32 {
+
+    let s = match s.as_ref() {
+        Some(s) => s,
+        None => return -1,
+    };
+    
+    let data = std::slice::from_raw_parts(s.data, s.len);
+    let input: &str = std::str::from_utf8(data).unwrap();
+
+    println!("x input: {:?}", &input);
+    let mut split = input.split(" ");
+    
+    let signature = split.next();
+    println!("signature: {:?}", signature);
+    let hash_1 = split.next();
+    println!("hash_1: {:?}", hash_1);
+    let signature_correct = split.next();
+    println!("signature_correct: {:?}", signature_correct);
+    let hash_2 = split.next();
+    println!("hash_2: {:?}", hash_2);
+    
+    let mut answer = "";
+    //let match_result: Result<&str, &str> = match hash_1 {
+    let match_result: &str = match hash_1 {
+        Some(hash_2) => "1",
+        None         => "2",
+        _            => "3",
+    };
+
+    match std::str::from_utf8(data) {
+        Ok(s) => real_code::compute(hash_1.unwrap()),
+        Err(_) => real_code::compute("ERROR"),
+    }
+        
+}
+
+//-2147483647 to 2147483647
+mod real_code {
+    pub fn compute(operator: &str) -> i32 {
+        match operator {
+            "SUCCESS"  => -1000000001,
+            "ERROR"    => -1111111111,
+            "TEST"     => -2147483647,
+            _          => 1999999999,
+        }
+    }
+}
+                        
+			                          	                          
+			                          </div>   
+			                        </div>
+
+			                        
+
+
+
+			                    </div> <!-- END ROW -->
+			                  </div>
+
+
+			                  
+			                <!-- row -->
+			                <!--  -->
+			                <div class="container col" style="border: 0px red solid;">
+			                  <div class="row" style="padding: 10px;"> 
+			                  	<div class="container col" style="padding-bottom: 10px;">
+			                      <button 
+			                      class="btn btn-lg btn-success" id="compile_btn" 
+			                      onclick="compile()">Compile</button>
+			                    </div>
+			                    <div class="container col" style="padding-bottom: 10px;">
+			                      <button 
+			                      class="btn btn-lg btn-info" 
+			                      id="initiate_protocol_btn" 
+			                      onclick="initiate_protocol()">Run</button>
+			                    </div>
+			                    <div class="container col" style="padding-bottom: 10px;">
+			                      <button 
+			                      class="btn btn-lg btn-info" 
+			                      id="cease_protocol_btn" 
+			                      onclick="cease_protocol()">Halt</button>
+			                    </div>
+			                    <!-- <h3>Console</h3> -->
+			                    <div class="container card" style="padding: 5%;">
+			                      <div class="row"> 
+			                        <div class="loader" id="compile_loader" style="display:none;"></div>
+			                        <p id="response_holder">[RESPONSE]</p>
+			                      </div>
+			                    </div>
+
+			                   
+			                  </div>
+			                </div>
+			                <!-- end CONSOLE -->
+
+			                
+
+			              </div> <!-- row -->
+
+			              
+
+			            </div>
+			          </div>
+
+			          
+
+			      </div>
+
+			    <!-- </section> -->
+			    
+
+
+			    <!--- RESPONSE -->
+
+			    <!-- <section> -->
+			      
+			    </section>
+
+
+
+		  		<!-- --------------END Editor SECTION---------------- -->
+			  </div>
+			  <div class="tab-pane fade" id="v-pills-Configuration" role="tabpanel" aria-labelledby="v-pills-Configuration-tab">
+			  	<!-- --------------BEGIN Configuration SECTION---------------- -->
+
+			  	<nav>
+				  <div class="nav nav-tabs" id="nav-tab" role="tablist">
+				    <a class="nav-item nav-link active" id="nav-pnp-tab" data-toggle="tab" href="#nav-pnp" role="tab" aria-controls="nav-pnp" aria-selected="true">Chain Templates</a>
+				  </div>
+				</nav>
+
+				<div class="tab-content" id="nav-tabContent">
+				  
+				  <div class="tab-pane fade" id="nav-pnp" role="tabpanel" aria-labelledby="nav-pnp-tab">
+				  	
+				  	<div class="card col-lg-12">
+					  <div class="card-body">
+					  	<div class="container" style="margin-bottom: 5vh; display:show;">
+					  		<div class="row">
+				  				Chain Templates
+				  			</div>	
+					    </div> <!-- END container -->
+					  </div>
+					</div>
+
+				  </div>
+
+
+				  <hr>
+
+				  <button class="btn btn-primary" onclick="addBlockchain()">
+  				   		Select 
+  				  </button> 
+				</div>
+
+				
+
+		  		<!-- --------------END Configuration SECTION---------------- -->
+			  </div>
+			  <div class="tab-pane fade" id="v-pills-Manage" role="tabpanel" aria-labelledby="v-pills-Manage-tab">
+			  	
+			  	<!-- --------------BEGIN Manage SECTION---------------- -->
+
+
+		  		<div class="card col-lg-12">
+				  <div class="card-body">
+				  	<div class="container" style="display: show;">
+				    	<div class="row" style="">
+				    		<h1>Manage Chains:</h1>
+				  			<div class="table-responsive">
+					  			<table class="table table-hover table-striped table-sm">
+					  			  <caption>Blockchains created by Account 
+					  			  	<span id="accountIDLabel"></span>
+					  			  </caption>
+								  <thead class="thead-dark">
+								    <tr>
+								      <th scope="col">blockchain_id</th>
+								      <th scope="col">configuration</th>
+								      <th scope="col">date_created</th>
+								      <th scope="col">identifier</th>
+								      <th scope="col">actions</th>
+								    </tr>
+								  </thead>
+								  <tbody id="bcTableParent"></tbody>
+								</table>
+							</div>
+				    	</div>
+				    </div>
+				  </div>
+				</div>
+
+
+		  		<!-- --------------END Manage SECTION---------------- -->
+
+			  </div>
+			  <div class="tab-pane fade" 
+			  	   id="v-pills-Block" 
+			  	   role="tabpanel" 
+			  	   aria-labelledby="v-pills-Block-tab"
+			  	   style="height: 100%; overflow-y: scroll;">
+			  	
+			  	<!-- --------------BEGIN Block SECTION---------------- -->
+
+			  	<div class="card col-lg-12">
+				  <div class="card-body">
+				    <h1>Blocks</h1>
+				    <!--  Blocks -->
+				    <div class="list-group col-lg-12">
+					  <!-- <a href="#" class="list-group-item list-group-item-action flex-column align-items-start ">  -->
+					  	<!-- active -->
+					    <div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Search for Blocks</h5>
+					      <small>beta</small>
+					    </div>
+					    <p class="mb-1">Search current chain for substring</p>
+					    <small><b>Note: </b>Only search by hash</small>
+					    <div class="input-group mb-3" style="">
+						  <div class="input-group-prepend">
+						    <span class="input-group-text" id="basic-addon1">
+						    	Query:
+						    </span>
+						  </div>
+						  <input type="text" id="chainSearchQuery" class="form-control" placeholder="124334, DNH3UNIJDB3DSBDH" aria-label="Username" aria-describedby="basic-addon1"/>
+						  <input class="btn btn-info" type="button" onclick="searchBlockchain()" value="search"/> 
+						</div>
+						<hr>
+					  <!-- </a> -->
+						<div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Current block</h5>
+					    </div>
+					    <p class="mb-1">Load entire chain, and display most recent block</p>
+					    <small><b>Note: </b>this will be changed to only send back most recent block, from protocol</small>
+					    <div class="input-group mb-3" style="">
+						  
+
+						  <!-- <input class="btn btn-secondary" type="button" onclick="" value="go"/>  -->
+						  
+						  <button class="btn btn-success" onclick="getCurrentBlock()">Fetch Current</button> 
+						  <!-- <a onclick="getBlocks()"><button type="button" class="btn btn-secondary">
+							Get All Current
+						  </button></a>
+						  <a onclick="getBlocks()"><button type="button" 
+						  onclick="getBlocks()" class="btn btn-success">
+							Current Block
+						  </button></a> -->
+						</div>
+						<hr>
+						<div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Blockchain (all)</h5>
+					    </div>
+					    <p class="mb-1">Retrieve entire blockchain</p>
+					    <small><b>Note: </b>may need to be truncated when chain becomes certain length long</small>
+					    <div class="input-group mb-3" style="">
+						  <button class="btn btn-success" onclick="getBlocks()">Fetch</button> 
+						</div>
+					</div>
+					<hr style="border: 1px solid black;">
+					<pre id="contentBoxBlock"></pre>
+				    <!-- END RESULTS -->
+				  </div>
+				</div><!--	end card  -->
+
+		  		<!-- --------------END Block SECTION---------------- -->
+
+			  </div>
+			  <div class="tab-pane fade" 
+			  	   id="v-pills-RootInstances" 
+			  	   role="tabpanel" 
+			  	   aria-labelledby="v-pills-RootInstances-tab"
+			  	   style="height: 100%; overflow-y: scroll; margin-bottom: 25px; padding-bottom: 25px;">
+			  	
+			  	<!-- --------------BEGIN RootInstances SECTION---------------- -->
+
+			  	<div class="card col-lg-12">
+				  <div class="card-body">
+				    <h1>Root Instances</h1>
+				    <!--  Blocks -->
+				    <div class="list-group col-lg-12">
+
+
+
+					    <div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Add Root Instance</h5>
+					    </div>
+
+
+					    <p class="mb-1">Add male or female root instance, and submit</p>
+					    <small><b>Note: </b>each field is required for each</small>
+					    
+
+						
+						<div id="accordion">
+						  <div class="card">
+						    <div class="card-header" id="male">
+						      <h5 class="mb-0">
+						        <button class="btn btn-secondary" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+						          Click to expand Male form
+						        </button>
+						      </h5>
+						    </div>
+
+						    <div id="collapseOne" class="collapse show" aria-labelledby="male" data-parent="#accordion">
+						      <div class="card-body">
+						      	<h3>Male</h3>
+						        <div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Type</span>
+								  </div>
+								  <input id="male_type" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="tx, voting, storage">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Class</span>
+								  </div>
+								  <input id="male_class" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="male" value="male" disabled>
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Source</span>
+								  </div>
+								  <input id="male_source" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="source">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Destination</span>
+								  </div>
+								  <input id="male_destination" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="destination">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Script</span>
+								  </div>
+								  <input id="male_script" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="[HASHPUBK] <OP_STORE>">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Partner</span>
+								  </div>
+								  <input id="male_partner" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="GYHbuyiBuTFiolio8gKJUhIUbU">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Message</span>
+								  </div>
+								  <input id="male_message" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="eg: identifier, hello world, etc">
+								</div>
+
+								<button class="btn collapsed btn-primary" onclick="addTransaction_male()">
+						          Submit Male Root Instance
+						        </button>
+						      </div>
+						    </div>
+						  </div>
+						  <div class="card">
+						    <div class="card-header" id="female">
+						      <h5 class="mb-0">
+						        <button class="btn collapsed btn-secondary" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+						          Click to expand Female form
+						        </button>
+						      </h5>
+						    </div>
+						    <div id="collapseTwo" class="collapse" aria-labelledby="female" data-parent="#accordion">
+						      <div class="card-body">
+						      	<h3>Female</h3>
+						       	<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Type</span>
+								  </div>
+								  <input id="female_type" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="tx, verdict, voting">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Class</span>
+								  </div>
+								  <input id="female_class" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" value="female" disabled>
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Source</span>
+								  </div>
+								  <input id="female_source" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="source">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Script</span>
+								  </div>
+								  <input id="female_script" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="<OP_STORE>">
+								</div>
+
+								<div class="input-group mb-3">
+								  <div class="input-group-prepend">
+								    <span class="input-group-text" id="inputGroup-sizing-default">Message</span>
+								  </div>
+								  <input id="female_message" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default" placeholder="eg: identifier, hello world, etc">
+								</div>
+
+								
+
+								<button class="btn collapsed btn-primary" onclick="addTransaction_female()">
+						          Submit Female Root Instance
+						        </button>
+						      </div> <!-- END CARD BODY -->
+						    </div>
+						  </div>
+						</div>
+
+
+					</div>
+
+
+					<hr>
+
+
+					<div class="list-group col-lg-12">
+					    <div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Find Root Instance</h5>
+					      <small>3 days ago</small>
+					    </div>
+					    <p class="mb-1">Search entire chain for matching root instance</p>
+					    <small>current by hash only. Invokes the chain graph</small>
+					    <div class="input-group mb-3" style="">
+						  <div class="input-group-prepend">
+						    <span class="input-group-text" id="basic-addon1">Find:</span>
+						  </div>
+						  <input type="text" id="findRootInstance" class="form-control" placeholder="dsguuhukUIBkjbkjbjbk" aria-label="Username" aria-describedby="basic-addon1">
+						  <input type="button" class="btn btn-info" onclick="findRootInstance()" value="Look Up"/>
+						</div>
+					</div>
+
+
+					<div class="list-group col-lg-12">
+					    <div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Get Unprocessed Root Instances</h5>
+					      <small>3 days ago</small>
+					    </div>
+					    <p class="mb-1">Get all root instances that have not been included in a block</p>
+					    <small>Donec id elit non mi porta.</small>
+					    <div class="input-group mb-3" style="">
+						  <input type="button" class="btn btn-success" onclick="getUnprocessedRootInstances()" value="Retrieve"/>
+						</div>
+					</div>
+
+
+
+					<pre id="contentBoxTransaction"></pre>
+				    <!-- END RESULTS -->
+				  </div>
+				</div><!--	end card  -->
+
+
+		  		<!-- --------------END RootInstances SECTION---------------- -->
+
+			  </div>
+			  <div class="tab-pane fade" id="v-pills-Peer" role="tabpanel" aria-labelledby="v-pills-Peer-tab">
+			  	
+			  	<!-- --------------BEGIN Peer SECTION---------------- -->
+
+			  	<div class="card col-lg-12">
+				  <div class="card-body">
+				    <h1>Peers</h1>
+				    <!--  Blocks -->
+				    <div class="list-group col-lg-12">
+					  
+					    <div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Add Peer</h5>
+					      <small>3 days ago</small>
+					    </div>
+					    <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+					    <small>Donec id elit non mi porta.</small>
+					    <div class="input-group mb-3" style="">
+						  <div class="input-group-prepend">
+						    <span class="input-group-text" id="basic-addon1">Add Peer:</span>
+						  </div>
+						  <input type="text" id="peerToAdd" class="form-control" placeholder="ws://localhost:6002" aria-label="Username" aria-describedby="basic-addon1">
+						  <input type="button" onclick="addPeer()" value="Add"/>
+						</div>
+
+						<div class="d-flex w-100 justify-content-between">
+					      <h5 class="mb-1">Get Peers</h5>
+					      <small>3 days ago</small>
+					    </div>
+					    <p class="mb-1">Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit.</p>
+					    <small>Donec id elit non mi porta.</small>
+					    <div class="input-group mb-3" style="">
+						  <button class="btn btn-success" onclick="getPeers()">
+						    Get Peers</button> 
+						</div>
+					    
+
+					</div>
+					<pre id="contentBoxPeer"></pre>
+				    <!-- END RESULTS -->
+				  </div>
+				</div><!--	end card  -->
+
+		  		<!-- --------------END Peer SECTION---------------- -->
+
+			  </div>
+
+			  <div class="tab-pane fade" id="v-pills-Wallet" role="tabpanel" aria-labelledby="v-pills-Wallet-tab">
+			  	
+			  	<!-- --------------BEGIN Peer SECTION---------------- -->
+
+			  	<div class="card col-lg-12">
+				  <div class="card-body">
+				    <h1>Wallet</h1>
+				    <!--  Blocks -->
+				    
+					<pre id="contentBoxWallet"></pre>
+				    <!-- END RESULTS -->
+				  </div>
+				</div><!--	end card  -->
+
+		  		<!-- --------------END Peer SECTION---------------- -->
+
+			  </div> <!-- end wallet-->
+
+			  <div class="tab-pane fade" id="v-pills-Exchange" role="tabpanel" aria-labelledby="v-pills-Exchange-tab">
+			  	
+			  	<!-- --------------BEGIN Peer SECTION---------------- -->
+
+			  	<div class="card col-lg-12">
+				  <div class="card-body">
+				    <h1>Exchange</h1>
+				    <!--  Blocks -->
+				    
+					<pre id="contentBoxExchange"></pre>
+				    <!-- END RESULTS -->
+				  </div>
+				</div><!--	end card  -->
+
+		  		<!-- --------------END Peer SECTION---------------- -->
+
+			  </div> <!-- exchange -->
+			  
+			  
+			</div>
+
+		</div>
+	</div> <!-- END nav_pills -->
+
+	
+
+
+  	<br><br>
+
+	<br><br>
+	
+  	<!-- card -->
+  	
+
+    </br></br>
+
+
+    
+    <!-- Modal -->
+	<div class="modal fade" id="mainDetailModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h5 class="modal-title" id="exampleModalLongTitle"><span id="details_label"></span>Details</h5>
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+	          <span aria-hidden="true">&times;</span>
+	        </button>
+	      </div>
+	      <div class="modal-body">
+	  			<pre id="highlight"></pre>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+
+
+    
+
+    
+    
+    
+  <!-- <table id="excelDataTable" border="1" style="width: 100%;">   </table> -->
+
+
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script> -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/js/bootstrap.min.js" integrity="sha384-a5N7Y/aK3qNeh15eJKGWxsqtnX/wWdSZSKp+81YjTmS15nvnvxKHuzaWwXHDli+4" crossorigin="anonymous"></script>
+
+
+  <script type="text/javascript" src="js/main.js"></script>
+
+
+
+  <script src="https://ace.c9.io/build/src/ace.js" type="text/javascript" charset="utf-8"></script>
+    
+    <script>
+              
+
+              // var toolbox = '<xml>';
+              // toolbox += '  <block type="controls_if"></block>';
+              // toolbox += '  <block type="controls_whileUntil"></block>';
+              // toolbox += '</xml>';
+              //var workspace = Blockly.inject('blocklyDiv', {toolbox: toolbox});
+
+              var demoWorkspace = Blockly.inject('blocklyDiv',
+                  { media: 'https://blockly-demo.appspot.com/static/media/',
+                   toolbox: document.getElementById('toolbox')});
+
+              // var demoWorkspace = Blockly.inject('blocklyDiv',
+              //     {toolbox: document.getElementById('toolbox')});
+
+    </script>   
+
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+
+        define('ace/mode/example', function(require, exports, module) {
+          "use strict";
+
+          var oop = require("ace/lib/oop");
+          var TextHighlightRules = require("ace/mode/text_highlight_rules").TextHighlightRules;
+
+          var MyNewHighlightRules = function() {
+              // regexp must not have capturing parentheses. Use (?:) instead.
+              // regexps are ordered -> the first match is used
+             // this.$rules = {
+             //      "start" : [
+             //          {
+             //               token : "variable",
+             //               regex : "Blockchain"
+             //          }
+             //      ]
+             //  };
+
+              this.$rules = new HtmlHighlightRules().getRules();
+              this.$rules = {
+                  "start": [ /* ... */ ]
+              };
+
+              var newRules = {
+                  "start": [ 
+                      {
+                        token: "string",
+                        regex: "Blockchain"
+                      }
+                   ]
+              }
+              this.addRules(newRules, "new-");
+
+              /*
+                  this.$rules = {
+                      "start": [ ... ],
+                      "new-start": [ ... ]
+                  };
+              */
+              /*
+                  this.$rules == Same this.$rules as HTML highlighting
+              */
+
+          };
+
+          oop.inherits(MyNewHighlightRules, TextHighlightRules);
+          exports.MyNewHighlightRules = MyNewHighlightRules;
+          });
+
+        
+        editor.session.setMode("ace/mode/example");
+        editor.session.setMode("ace/mode/rust");
+        editor.session.setUseWorker(false)
+    </script>
+
+    <!-- <script src="js/syntax.js"></script> -->
+
+    <script>
+
+    // Create Base64 Object
+    var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9+/=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/rn/g,"n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}}
+
+    function B64encode(string){
+
+      // Encode the String
+      var encodedString = Base64.encode(string);
+      console.log("encodedString: "+encodedString); // Outputs: "SGVsbG8gV29ybGQh"
+
+      return encodedString
+    } 
+
+    function B64decode(encodedString){
+      // Decode the String
+      var decodedString = Base64.decode(encodedString);
+      console.log(decodedString); // Outputs: "Hello World!"
+      return decodedString
+
+    } 
+
+    function start_compile_loader(){
+      //$("#compile_loader").hide()
+      document.getElementById("compile_loader").style.display = "block";
+    }
+
+    function end_compile_loader(){
+      //$("#compile_loader").show()
+      document.getElementById("compile_loader").style.display = "none";
+    }
+
+    function compile(){
+
+      console.log("compiling blank function")
+      
+
+    }
+
+    function initiate_protocol(){
+    	console.log("initiating protocol blank function")
+    }
+
+    function cease_protocol(){
+    	console.log("halting protocol blank function")
+    }
+
+
+    </script>
+
+    
+    <script>
+
+      function initMap() {
+        var myLatLng = {lat: -25.363, lng: 131.044};
+        console.log("map generated?")
+        var map = new google.maps.Map(document.getElementById('gmap'), {
+          zoom: 4,
+          center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: 'Hello World!'
+        });
+      }
+
+
+
+    </script>
+    
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCDvUCvPS1a7oCPD2P2BPuE02vfb74q5qM&callback=initMap"></script>
+
+	<script type="text/javascript">
+		
+	const { ipcRenderer } = require('electron');
+
+
+	////////////////////////COMPILE
+	function compile_call(args) {
+	    return new Promise(resolve => {
+
+	        ipcRenderer.send('compile_call_message', args)
+	        ipcRenderer.on('compile_call_reply', (event, result) => {
+	        	console.log(result)
+	        	setTimeout(function(){
+	        		console.log("compile_call return")
+	            	end_compile_loader()
+	            	//console.log(JSON.parse(result))
+	            	
+	            	//$("#response_holder").html(result.configuration)
+
+	            	$("#response_holder").html(JSON.stringify(result))
+
+	            }, 1000);
+	            resolve(result);
+	        })
+
+	    });
+	}
+
+	document
+    .querySelector('#compile_btn')
+    .addEventListener('click', () => {
+      //ipcRenderer.send('click',(function(d){
+
+		$("#response_holder").html("")
+		start_compile_loader()
+
+		var code = editor.getValue();//$("#editor").
+
+		var codeToSend = null
+
+		//temporary switch for file or passed_code
+		if(code.length > 0){
+		  codeToSend = B64encode(code)
+		}else{
+		  codeToSend = ""
+		}
+
+	  	console.log("DONE")
+
+	    //}));
+	    console.log("calling electron")
+	    compile_call(code)
+    });
+
+
+    ////////////////////////INITIATE PROTOCOL
+    function initiate_protocol_call(args) {
+	    return new Promise(resolve => {
+
+	        ipcRenderer.send('initiate_protocol_call_message', args)
+	        ipcRenderer.on('initiate_protocol_call_reply', (event, result) => {
+	        	console.log("intiate protocol: result")
+	        	setTimeout(function(){
+
+	            	//end_compile_loader()
+	            	console.log(result)
+
+	            }, 1000);
+	            resolve(result);
+	        })
+
+	    });
+	}
+
+    document
+    .querySelector('#initiate_protocol_btn')
+    .addEventListener('click', () => {
+    	console.log("running protocol")
+		initiate_protocol_call("YO")
+
+		//TODO: show running state on frontend
+		UILog("Running chain...")
+
+    });
+
+    ////////////////////////CEASE PROTOCOL
+    function cease_protocol_call(args) {
+	    return new Promise(resolve => {
+
+	        ipcRenderer.send('cease_protocol_call_message', args)
+	        ipcRenderer.on('cease_protocol_call_reply', (event, result) => {
+	        	console.log("cease_protocol_call_message")
+	        	setTimeout(function(){
+
+	            	//end_compile_loader()
+	            	console.log(result)
+
+	            }, 1000);
+	            resolve(result);
+	        })
+
+	    });
+	}
+
+    document
+    .querySelector('#cease_protocol_btn')
+    .addEventListener('click', () => {
+    	console.log("stopping protocol")
+		cease_protocol_call("YO")
+    });
+	</script>    
+
+    <!-- Insert this line after script imports -->
+	<script>if (window.module) module = window.module;</script>
+
+	</body>
+</html>
+
+
+
+
+
+
+
+
+

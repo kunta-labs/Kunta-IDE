@@ -1,0 +1,41 @@
+{
+  "name": "kunta",
+  "version": "0.0.0",
+  "description": "First Gen Core Reference Implementation for Kunta Nucleus",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron . --js-flags='--expose-gc'",
+    "protocol": "node --max-old-space-size=8192 --expose-gc ./core/run.js "
+  },
+  "dependencies": {
+    "bindings": "~1.2.1",
+    "bluebird": "^3.5.1",
+    "body-parser": "^1.15.2",
+    "crypto-js": "^3.1.6",
+    "crypto2": "^2.0.0",
+    "electron-rebuild": "^1.8.2",
+    "express": "~4.11.1",
+    "level-browserify": "^1.1.2",
+    "levelgraph": "^2.1.1",
+    "merkle": "^0.6.0",
+    "nan": "^2.14.0",
+    "node-abi": "^2.5.0",
+    "node-fetch": "^2.5.0",
+    "npm": "^6.1.0",
+    "prettyjson": "^1.2.1",
+    "say": "^0.15.0",
+    "sqlite3": "^4.0.9",
+    "text-encoding": "^0.7.0",
+    "threads": "^0.11.0",
+    "to": "^0.2.9",
+    "update": "^0.7.4",
+    "ws": "^1.1.0"
+  },
+  "engines": {
+    "node": ">=4.3.2"
+  },
+  "gypfile": true,
+  "devDependencies": {
+    "electron": "^3.0.13"
+  }
+}
