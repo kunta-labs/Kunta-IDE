@@ -1,6 +1,6 @@
 # Project Kunta
 
-![alt text](http://kunta.io/img/kunta_right.png "Project Kunta Logo")
+![alt text](http://kunta.io/img/kunta_right.png "Project Kunta Logo" | width=100)
 
 
 *** RUN ON NODE v9.6.1 FOR NOW **
