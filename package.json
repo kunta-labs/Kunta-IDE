@@ -14,7 +14,7 @@
     "crypto-js": "^3.1.6",
     "crypto2": "^2.0.0",
     "electron-rebuild": "^1.8.2",
-    "express": "~4.11.1",
+    "express": "~4.17.3",
     "level-browserify": "^1.1.2",
     "levelgraph": "^2.1.1",
     "merkle": "^0.6.0",
